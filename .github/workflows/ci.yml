@@ -1,0 +1,32 @@
+
+name: Vehicle Integration - CI
+
+# Define quando o pipeline será executado.
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    name: Build Java Application
+    runs-on: ubuntu-latest
+
+    steps:
+      # Baixa o código do repositório.
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Configura o Java 21.
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      # Configura o ambiente Gradle.
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      # Compila e valida o projeto.
+      - name: Build with Gradle
+        run: ./gradlew build
