@@ -6,6 +6,11 @@ on:
   push:
   pull_request:
 
+# Permissões necessárias para publicar imagens no GHCR.
+permissions:
+  contents: read
+  packages: write
+
 jobs:
   build:
     name: Build Docker Image
@@ -16,6 +21,20 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Constrói a imagem Docker e executa os testes.
+      # Autentica no GHCR somente em push na branch main.
+      - name: Login to GHCR
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      # Constrói a imagem Docker com duas tags.
       - name: Build Docker Image
-        run: docker build -t vehicle-integration:ci .
+        run: |
+          docker build \
+            -t ghcr.io/wevertonbarbosa/vehicle-integration:latest \
+            -t ghcr.io/wevertonbarbosa/vehicle-integration:${{ github.sha }} \
+            .
+
+      # Publica a imagem no GitHub Container Registry.
+      - name: Push Docker Image
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: docker push --all-tags ghcr.io/wevertonbarbosa/vehicle-integration
