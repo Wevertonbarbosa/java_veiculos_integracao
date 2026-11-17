@@ -1,0 +1,15 @@
+# Controle de versão.
+.git
+.gitignore
+
+# Arquivos gerados pelo Gradle.
+.gradle
+build
+
+# Configurações do ambiente de desenvolvimento.
+.vscode
+.idea
+
+# Arquivos do sistema operacional.
+.DS_Store
+Thumbs.db
